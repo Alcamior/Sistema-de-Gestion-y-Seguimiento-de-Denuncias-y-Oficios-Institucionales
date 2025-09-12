@@ -1,7 +1,67 @@
 import { Link, router } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import { useEffect } from 'react';
+import Pusher from 'pusher-js';
+import { Toaster } from '@/Components/ui/sonner';
+import { toast } from 'sonner';
 
 export default function MainLayout({ children, auth, topHeader, insideHeader, backURL }) {
+    
+    useEffect(() => {
+        Pusher.logToConsole = true;
+
+        const pusher = new Pusher('abe2826d80af75dab0ac', {
+            cluster: 'us2',
+        });
+
+        const channel = pusher.subscribe('my-channel');
+
+        channel.bind('my-event', function(data: any){
+            console.log('Received data: ', data);
+
+            const message = data?.data?.message || 'No message provided';
+
+            toast.success('New Event Received', {
+                description: (
+                    <div className='flex flex-col gap-1'>
+                        <span className='text-sm font-medium text-white/90'>
+                            {message}
+                        </span>
+                    </div>
+                ),
+                position: 'top-right',
+                duration: 5000,
+                richColors: true,
+                closeButton: true,
+                action: {
+                    label: "View Details",
+                    onClick: () => console.log('View Details clicked: ', data)
+                },
+                style: {
+                    background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                    color: 'white',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    borderRadius: '12px',
+                    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)',
+                    padding: '8px 12px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    animation: 'slideIn 0.3s ease-out, slightBounce 0.3s ease-out',
+                    width: '400px',
+                    minHeight: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                }
+            });
+        });
+
+        return () => {
+            channel.unbind_all();
+            channel.unsubscribe();
+        };
+
+    }, []);
+
     return (
         <main className="grid grid-cols-5 gap-4 h-screen bg-[#F9F7F5]">
 

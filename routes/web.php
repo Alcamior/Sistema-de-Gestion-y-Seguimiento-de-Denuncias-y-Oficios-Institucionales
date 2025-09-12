@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\MyEvent;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -166,5 +167,17 @@ Route::put('/roles/{id}', [RolesController::class, 'update'])
 Route::delete('/roles/{id}', [RolesController::class, 'destroy'])
     ->name('roles.destroy')
     ->middleware('can:eliminar roles');
+
+// MÓDULO DE NOTIFICACIONES (PRUEBA)
+Route::get('/trigger-event', function () {
+    $data = [
+        'message' => 'Holaaaaaaa.',
+        'time' => now()->toDateTimeString()
+    ];
+    broadcast(new MyEvent($data));
+    return "Event send";
+});
+
+
 
 require __DIR__.'/auth.php';

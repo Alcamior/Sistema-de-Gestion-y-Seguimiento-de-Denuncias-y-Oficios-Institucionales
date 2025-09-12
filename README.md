@@ -79,3 +79,9 @@ npm install date-fns
 php artisan storage:link
 ```
 
+<h2>Instalar dependecia de Pusher</h2>
+
+```bash
+composer require pusher/pusher-php-server
+npm install pusher-js
+```
